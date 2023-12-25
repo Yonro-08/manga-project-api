@@ -22,6 +22,7 @@ const mangaSchema = new Schema(
     chapters: {
       type: [
         {
+          chapterTom: Number,
           chapterNum: Number,
           chapterImage: [String],
           views: {

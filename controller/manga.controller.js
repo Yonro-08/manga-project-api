@@ -74,7 +74,7 @@ export const createManga = async (req, res) => {
 export const createChapter = async (req, res) => {
   try {
     const { endpoint } = req.params;
-    const { chapterNum, chapterImage } = req.body || {};
+    const { chapterTom, chapterNum, chapterImage } = req.body || {};
 
     const manga = await MangaModel.findOne({ endpoint });
 
@@ -86,7 +86,7 @@ export const createChapter = async (req, res) => {
 
     const { chapters } = manga;
 
-    chapters.push({ chapterNum, chapterImage });
+    chapters.push({ chapterTom, chapterNum, chapterImage });
 
     await manga.updateOne(
       {
@@ -94,8 +94,6 @@ export const createChapter = async (req, res) => {
       },
       { chapters }
     );
-
-    console.log(manga.chapters);
 
     await manga.save();
     res.status(200).json({ result: "Глава успешно добавлена" });

@@ -107,3 +107,59 @@ export const createUser = async (req, res) => {
 		});
 	}
 };
+
+export const getBookmark = async (req, res) => {
+	try {
+		const { userId } = req;
+
+		const user = await UserModel.findById(userId);
+
+		if (!user) {
+			res.status(404).json({
+				message: "Пользователь не найден",
+			});
+		}
+
+		res.json(user.bookmarks);
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({
+			message: "Не доступа!",
+		});
+	}
+};
+
+export const addBookmark = async (req, res) => {
+	try {
+		const { userId } = req;
+		const { endpoint, url, title, category } = req.body;
+
+		const user = await UserModel.findById(userId);
+
+		if (!user) {
+			res.status(404).json({
+				message: "Пользователь не найден",
+			});
+		}
+
+		if (user.bookmarks.find((bookmark) => bookmark.endpoint === endpoint)) {
+			user.bookmarks = user.bookmarks.map((bookmark) => {
+				if (bookmark.endpoint === endpoint) {
+					return { ...bookmark, category };
+				}
+				return bookmark;
+			});
+		} else {
+			user.bookmarks.push({ endpoint, url, title, category });
+		}
+
+		await user.save();
+
+		res.json(user.bookmarks);
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({
+			message: "Не доступа!",
+		});
+	}
+};

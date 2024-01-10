@@ -16,6 +16,16 @@ const userSchema = new Schema(
 			type: String,
 			default: "",
 		},
+
+		bookmarks: {
+			type: Array({
+				endpoint: String,
+				url: String,
+				title: String,
+				category: String,
+			}),
+			default: [],
+		},
 	},
 	{
 		timestamps: true,

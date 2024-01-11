@@ -1,29 +1,41 @@
 import BookmarkModel from "../models/bookmark.models.js";
-import UserModel from "../models/user.models.js";
 
 export const getBookmark = async (req, res) => {
 	try {
 		const { userId } = req;
 		const { page = 0, take = 10, category } = req.query;
 
-		const user = await UserModel.findById(userId);
+		const bookmarks = await BookmarkModel.findOne({ userId });
 
-		if (!user) {
-			res.status(404).json({
-				message: "Пользователь не найден",
+		if (!bookmarks) {
+			return res.status(404).json({
+				message: "Закладки не найдены!",
 			});
 		}
 
-		const bookmark = user.bookmarks.filter(
+		const filterBookmarks = bookmarks.bookmarks.filter(
 			(book) => book.category === category
 		);
-		console.log(bookmark);
 
-		res.json(bookmarks);
+		console.log(filterBookmarks);
+
+		if (!filterBookmarks) {
+			return res.status(404).json({
+				message: "Закладки не найдены!",
+			});
+		}
+
+		const itemOffset = (Number(page) * Number(take)) % filterBookmarks.length;
+		const endOffset = itemOffset + Number(take);
+		const newBookmarks = filterBookmarks.slice(itemOffset, endOffset);
+
+		console.log(newBookmarks);
+
+		res.json({ totalLength: bookmarks.totalLength, data: newBookmarks });
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({
-			message: "Не доступа!",
+			message: "Нет доступа!",
 		});
 	}
 };

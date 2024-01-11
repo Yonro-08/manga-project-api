@@ -11,20 +11,9 @@ const userSchema = new Schema(
 			type: String,
 			required: true,
 		},
-
 		avatar: {
 			type: String,
 			default: "",
-		},
-
-		bookmarks: {
-			type: Array({
-				endpoint: String,
-				url: String,
-				title: String,
-				category: String,
-			}),
-			default: [],
 		},
 	},
 	{

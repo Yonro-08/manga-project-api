@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
 
+import bookmarkRouter from "./routes/bookmark.routes.js";
 import mangaRouter from "./routes/manga.routes.js";
 import userRouter from "./routes/user.routes.js";
 
@@ -26,5 +27,6 @@ app.use(cors());
 // Create api
 app.use("/api", userRouter);
 app.use("/api", mangaRouter);
+app.use("/api", bookmarkRouter);
 
 app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));

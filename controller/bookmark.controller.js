@@ -36,13 +36,9 @@ export const getBookmark = async (req, res) => {
 	}
 };
 
-export const getBookmarkByEndpoint = async (req, res) => {
+export const sendTotalLengthCategory = async (req, res) => {
 	try {
 		const { userId } = req;
-		const { endpoint } = req.params;
-
-		console.log(userId);
-
 		const bookmarks = await BookmarkModel.findOne({ userId });
 
 		if (!bookmarks) {
@@ -51,11 +47,14 @@ export const getBookmarkByEndpoint = async (req, res) => {
 			});
 		}
 
-		const bookmark = bookmarks.bookmarks.filter(
-			(elem) => elem.endpoint === endpoint
-		);
+		const categoryCounts = bookmarks.bookmarks.reduce((acc, book) => {
+			const category = book.category;
+			console.log(category);
+			acc[category] = (acc[category] || 0) + 1;
+			return acc;
+		}, {});
 
-		res.json(bookmark);
+		res.json(categoryCounts);
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({

@@ -111,6 +111,7 @@ export const createUser = async (req, res) => {
 export const getBookmark = async (req, res) => {
 	try {
 		const { userId } = req;
+		const { page = 0, take = 10 } = req.query;
 
 		const user = await UserModel.findById(userId);
 
@@ -120,7 +121,11 @@ export const getBookmark = async (req, res) => {
 			});
 		}
 
-		res.json(user.bookmarks);
+		const itemOffset = (Number(page) * Number(take)) % user.bookmarks.length;
+		const endOffset = itemOffset + Number(take);
+		const bookmarks = user.bookmarks.slice(itemOffset, endOffset);
+
+		res.json(bookmarks);
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({
@@ -155,7 +160,9 @@ export const addBookmark = async (req, res) => {
 
 		await user.save();
 
-		res.json(user.bookmarks);
+		res.json({
+			status: "Success",
+		});
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({

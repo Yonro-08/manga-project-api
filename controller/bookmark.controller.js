@@ -29,7 +29,7 @@ export const getBookmark = async (req, res) => {
 
 		console.log(newBookmarks);
 
-		res.json({ data: newBookmarks });
+		res.json(newBookmarks);
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({

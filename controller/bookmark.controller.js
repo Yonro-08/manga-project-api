@@ -17,8 +17,6 @@ export const getBookmark = async (req, res) => {
 			(book) => book.category === category
 		);
 
-		console.log(filterBookmarks);
-
 		if (!filterBookmarks) {
 			return res.status(404).json({
 				message: "Закладки не найдены!",
@@ -31,7 +29,7 @@ export const getBookmark = async (req, res) => {
 
 		console.log(newBookmarks);
 
-		res.json({ totalLength: bookmarks.totalLength, data: newBookmarks });
+		res.json({ data: newBookmarks });
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({
@@ -93,29 +91,14 @@ export const addBookmark = async (req, res) => {
 		if (
 			bookmarks.bookmarks.find((bookmark) => bookmark.endpoint === endpoint)
 		) {
-			let prevCategory;
-
 			bookmarks.bookmarks = bookmarks.bookmarks.map((bookmark) => {
 				if (bookmark.endpoint === endpoint) {
-					prevCategory = bookmark.category;
 					return { ...bookmark, category };
 				}
 				return bookmark;
 			});
-
-			bookmarks.totalLength[prevCategory] = bookmarks.bookmarks.filter(
-				(bookmark) => bookmark.category === prevCategory
-			).length;
-
-			bookmarks.totalLength[category] = bookmarks.bookmarks.filter(
-				(bookmark) => bookmark.category === category
-			).length;
 		} else {
 			bookmarks.bookmarks.push({ endpoint, url, title, category });
-
-			bookmarks.totalLength[category] = bookmarks.bookmarks.filter(
-				(bookmark) => bookmark.category === category
-			).length;
 		}
 
 		await bookmarks.save();

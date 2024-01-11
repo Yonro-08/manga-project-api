@@ -3,7 +3,7 @@ import BookmarkModel from "../models/bookmark.models.js";
 export const getBookmark = async (req, res) => {
 	try {
 		const { userId } = req;
-		const { page = 0, take = 10, category } = req.query;
+		const { page = 1, take = 10, category } = req.query;
 
 		const bookmarks = await BookmarkModel.findOne({ userId });
 
@@ -23,7 +23,7 @@ export const getBookmark = async (req, res) => {
 			});
 		}
 
-		const itemOffset = (Number(page) * Number(take)) % filterBookmarks.length;
+		const itemOffset = (Number(page) - 1) * Number(take);
 		const endOffset = itemOffset + Number(take);
 		const newBookmarks = filterBookmarks.slice(itemOffset, endOffset);
 

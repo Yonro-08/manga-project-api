@@ -21,7 +21,6 @@ mongoose
 
 // App
 app.use(express.json({ limit: "10mb" }));
-app.use("/uploads", express.static("uploads"));
 app.use(cors());
 
 // Create api

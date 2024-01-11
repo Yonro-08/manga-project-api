@@ -39,11 +39,14 @@ export const getMangaByEndpoint = async (req, res) => {
 			const decoded = jwt.verify(token, "secret123");
 			const bookmarks = await bookmarkModels.findOne({ userId: decoded._id });
 
-			const bookmark = bookmarks.bookmarks.find(
-				(bookmark) => bookmark.endpoint === endpoint
-			);
-			if (bookmark) {
-				activeCategory = bookmark.category;
+			if (bookmarks) {
+				const bookmark = bookmarks.bookmarks.find(
+					(bookmark) => bookmark.endpoint === endpoint
+				);
+
+				if (bookmark) {
+					activeCategory = bookmark.category;
+				}
 			}
 		}
 

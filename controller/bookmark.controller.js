@@ -27,8 +27,6 @@ export const getBookmark = async (req, res) => {
 		const endOffset = itemOffset + Number(take);
 		const newBookmarks = filterBookmarks.slice(itemOffset, endOffset);
 
-		console.log(newBookmarks);
-
 		res.json(newBookmarks);
 	} catch (error) {
 		console.log(error);
@@ -91,12 +89,19 @@ export const addBookmark = async (req, res) => {
 		if (
 			bookmarks.bookmarks.find((bookmark) => bookmark.endpoint === endpoint)
 		) {
-			bookmarks.bookmarks = bookmarks.bookmarks.map((bookmark) => {
-				if (bookmark.endpoint === endpoint) {
-					return { ...bookmark, category };
-				}
-				return bookmark;
-			});
+			if (category === "Убрать из закладок") {
+				bookmarks.bookmarks = bookmarks.bookmarks.filter(
+					(bookmark) => bookmark.endpoint !== endpoint
+				);
+				console.log(bookmarks);
+			} else {
+				bookmarks.bookmarks = bookmarks.bookmarks.map((bookmark) => {
+					if (bookmark.endpoint === endpoint) {
+						return { ...bookmark, category };
+					}
+					return bookmark;
+				});
+			}
 		} else {
 			bookmarks.bookmarks.push({ endpoint, url, title, category });
 		}

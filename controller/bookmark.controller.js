@@ -28,18 +28,38 @@ export const getBookmark = async (req, res) => {
 	}
 };
 
+export const getBookmarkByEndpoint = async (req, res) => {
+	try {
+		const { userId } = req;
+		const { endpoint } = req.params;
+
+		console.log(userId);
+
+		const bookmarks = await BookmarkModel.findOne({ userId });
+
+		if (!bookmarks) {
+			res.status(404).json({
+				message: "Закладка не найдена",
+			});
+		}
+
+		const bookmark = bookmarks.bookmarks.filter(
+			(elem) => elem.endpoint === endpoint
+		);
+
+		res.json(bookmark);
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({
+			message: "Нет доступа!",
+		});
+	}
+};
+
 export const addBookmark = async (req, res) => {
 	try {
 		const { userId } = req;
 		const { endpoint, url, title, category } = req.body;
-
-		const user = await UserModel.findById(userId);
-
-		if (!user) {
-			res.status(404).json({
-				message: "Пользователь не найден",
-			});
-		}
 
 		const bookmarks = await BookmarkModel.findOne({ userId });
 

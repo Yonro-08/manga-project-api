@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 
 import bookmarkModels from "../models/bookmark.models.js";
 import MangaModel from "../models/manga.models.js";
+import userModels from "../models/user.models.js";
 
 export const getManga = async (req, res) => {
 	try {
@@ -35,9 +36,16 @@ export const getMangaByEndpoint = async (req, res) => {
 
 		const manga = await MangaModel.findOne({ endpoint });
 
+		if (!manga) {
+			return res.status(400).json({
+				message: "Данной манги не существует в базе",
+			});
+		}
+
 		if (token) {
 			const decoded = jwt.verify(token, "secret123");
-			const bookmarks = await bookmarkModels.findOne({ userId: decoded._id });
+			const userId = decoded._id;
+			const bookmarks = await bookmarkModels.findOne({ userId });
 
 			if (bookmarks) {
 				const bookmark = bookmarks.bookmarks.find(
@@ -48,12 +56,6 @@ export const getMangaByEndpoint = async (req, res) => {
 					activeCategory = bookmark.category;
 				}
 			}
-		}
-
-		if (!manga) {
-			return res.status(400).json({
-				message: "Данной манги не существует в базе",
-			});
 		}
 
 		res.status(200).json({ ...manga._doc, activeCategory });
@@ -119,5 +121,61 @@ export const createChapter = async (req, res) => {
 		res.status(200).json({ result: "Глава успешно добавлена" });
 	} catch (error) {
 		res.status(400).json({ error: error.message });
+	}
+};
+
+export const postLiked = async (req, res) => {
+	try {
+		const { userId } = req;
+		const { endpoint, chapterNum } = req.body;
+
+		const user = await userModels.findById(userId);
+
+		if (!user) {
+			res.status(404).json({
+				message: "Пользователь не найден",
+			});
+		}
+
+		const manga = await MangaModel.findOne({ endpoint });
+
+		if (!manga) {
+			res.status(404).json({
+				message: "Манга не найдена",
+			});
+		}
+
+		const newChapters = manga.chapters.map((chapter) => {
+			if (chapter.chapterNum === Number(chapterNum)) {
+				if (chapter.liked.find((user) => user.toString() === userId)) {
+					const newLiked = chapter.liked.filter(
+						(user) => user.toString() !== userId
+					);
+					return { ...chapter._doc, liked: newLiked };
+				}
+
+				const newChapter = chapter.liked.push(userId);
+				return newChapter;
+			}
+			return chapter;
+		});
+
+		console.log(newChapters);
+
+		await manga.updateOne(
+			{
+				endpoint,
+			},
+			{ chapters: newChapters }
+		);
+
+		await manga.save();
+
+		res.json(true);
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({
+			message: "Нет доступа!",
+		});
 	}
 };

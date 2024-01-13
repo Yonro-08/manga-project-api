@@ -69,9 +69,10 @@ export const getMangaByEndpoint = async (req, res) => {
 
 export const createManga = async (req, res) => {
 	try {
-		const { title, url, content, typeManga, year } = req.body || {};
+		const { title, url, content, typeManga, year, genres } = req.body || {};
 
 		const endpoint = title.englishName.toLowerCase().split(" ").join("-");
+		const newGenres = genres.replaceAll(" ", "").split(",");
 
 		const newManga = new MangaModel({
 			endpoint,
@@ -80,6 +81,7 @@ export const createManga = async (req, res) => {
 			content,
 			typeManga,
 			year,
+			genres: newGenres,
 		});
 
 		await newManga.save();

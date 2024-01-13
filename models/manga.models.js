@@ -37,6 +37,10 @@ const mangaSchema = new Schema(
 			],
 			default: [],
 		},
+		genres: {
+			type: [String],
+			default: [],
+		},
 		rating: {
 			type: [
 				{

@@ -6,6 +6,9 @@ import userModels from "../models/user.models.js";
 
 export const getManga = async (req, res) => {
 	try {
+		const { limit, category = "news" } = req.query;
+		const createdAt = category === "news" ? -1 : 1;
+
 		const manga = await MangaModel.find(
 			{},
 			{
@@ -16,6 +19,12 @@ export const getManga = async (req, res) => {
 				url: 1,
 				typeManga: 1,
 				year: 1,
+			},
+			{
+				sort: {
+					createdAt,
+				},
+				limit,
 			}
 		);
 
@@ -72,7 +81,7 @@ export const createManga = async (req, res) => {
 		const { title, url, content, typeManga, year, genres } = req.body || {};
 
 		const endpoint = title.englishName.toLowerCase().split(" ").join("-");
-		const newGenres = genres.replaceAll(" ", "").split(",");
+		const newGenres = genres.split(",").map((genre) => genre.trim());
 
 		const newManga = new MangaModel({
 			endpoint,

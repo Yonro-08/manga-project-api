@@ -171,8 +171,6 @@ export const postLiked = async (req, res) => {
 			return chapter;
 		});
 
-		console.log(newChapters);
-
 		await manga.updateOne(
 			{
 				endpoint,

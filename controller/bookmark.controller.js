@@ -49,7 +49,7 @@ export const sendTotalLengthCategory = async (req, res) => {
 
 		const categoryCounts = bookmarks.bookmarks.reduce((acc, book) => {
 			const category = book.category;
-			console.log(category);
+
 			acc[category] = (acc[category] || 0) + 1;
 			return acc;
 		}, {});
@@ -69,6 +69,8 @@ export const addBookmark = async (req, res) => {
 		const { endpoint, url, title, category } = req.body;
 
 		const bookmarks = await BookmarkModel.findOne({ userId });
+
+		// console.log(bookmarks);
 
 		if (!bookmarks) {
 			const newBookmarks = new BookmarkModel({
@@ -92,7 +94,6 @@ export const addBookmark = async (req, res) => {
 				bookmarks.bookmarks = bookmarks.bookmarks.filter(
 					(bookmark) => bookmark.endpoint !== endpoint
 				);
-				console.log(bookmarks);
 			} else {
 				bookmarks.bookmarks = bookmarks.bookmarks.map((bookmark) => {
 					if (bookmark.endpoint === endpoint) {
